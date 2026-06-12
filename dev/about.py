@@ -1,5 +1,12 @@
 import streamlit as st
 import pandas as pd
+import os
+
+current_dir = os.path.dirname(__file__)
+image_path = os.path.join(current_dir, "actual_vs_predicted.png")
+image_path2 = os.path.join(current_dir, "correlation_features.png")
+csv_path = os.path.join(current_dir, "tabel_statistik_gaji.csv")
+
 
 st.title("Dataset dan Insight")
 with st.expander("Tentang dataset"):
@@ -37,15 +44,15 @@ with st.expander(" Ringkasan Insight Dataset"):
     """)
 
     st.image(
-        "actual_vs_predicted.png",
+        image_path,
         caption="Grafik Evaluasi Model: Aktual vs Prediksi Gaji",
     )
     st.image(
-        "correlation_features.png",
+        image_path2,
         caption="Grafik Heatmap Korelasi antar Fitur",
     )
     st.subheader("Laporan Regresi Statistik Statsmodels")
-    df_tabel = pd.read_csv("tabel_statistik_gaji.csv")
+    df_tabel = pd.read_csv(csv_path)
     st.dataframe(df_tabel, use_container_width=True)
 
 st.write("Pelajari lebih lanjut")

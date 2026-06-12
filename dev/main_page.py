@@ -1,6 +1,10 @@
 import streamlit as st
 import pandas as pd
+import os
 import joblib
+
+current_dir = os.path.dirname(__file__)
+model_path = os.path.join(current_dir, "lr_salary_model.pkl")
 
 st.set_page_config(page_title="Estimasi Gaji Karyawan", layout="centered")
 st.title("Sistem Prediksi Gaji Karyawan")
@@ -9,7 +13,7 @@ st.write("Masukkan parameter karyawan untuk mendapatkan estimasi kompensasi yang
 
 @st.cache_resource
 def load_model():
-    return joblib.load("lr_salary_model.pkl")
+    return joblib.load(model_path)
 
 
 model = load_model()
