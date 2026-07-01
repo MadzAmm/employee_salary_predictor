@@ -7,9 +7,9 @@ image_path = os.path.join(current_dir, "actual_vs_predicted.png")
 image_path2 = os.path.join(current_dir, "correlation_features.png")
 csv_path = os.path.join(current_dir, "tabel_statistik_gaji.csv")
 
-
-st.title("Dataset dan Insight")
-with st.expander("Tentang dataset"):
+st.set_page_config(page_title="About Datasets and Insights", layout="centered")
+st.title("Dataset and Insights")
+with st.expander("About the dataset"):
     st.markdown(
         """
     ### Informasi Umum Dataset
@@ -18,7 +18,7 @@ with st.expander("Tentang dataset"):
     hampir seluruh variasi gaji di dalam perusahaan ini ditentukan oleh faktor-faktor terukur di bawah ini."""
     )
 
-with st.expander(" Ringkasan Insight Dataset"):
+with st.expander(" Dataset Insights Summary"):
     st.markdown("""
     ### Ringkasan Insight Utama (Data-Driven)
     Berdasarkan analisis regresi statistik mendalam, berikut adalah aturan rahasia di balik struktur penggajian:
@@ -51,11 +51,11 @@ with st.expander(" Ringkasan Insight Dataset"):
         image_path2,
         caption="Grafik Heatmap Korelasi antar Fitur",
     )
-    st.subheader("Laporan Regresi Statistik Statsmodels")
+    st.subheader("Statsmodels Statistical Regression Report")
     df_tabel = pd.read_csv(csv_path)
     st.dataframe(df_tabel, use_container_width=True)
 
-st.write("Pelajari lebih lanjut")
+st.write("Learn more")
 
 col1, col2 = st.columns(2)
 

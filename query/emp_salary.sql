@@ -102,10 +102,10 @@ FROM employee_salary;
 -- CARA MENGHANDLE MISSING VALUE JIKA ADA
 -- ada 2 pendekatan utama untuk menanganinya:
 
--- OPSI 1: Menghapus baris yang memiliki missing value (Drop)
+-- OPSI 1: Menghapus baris yang memiliki missing value (DELETE)
 -- Biasanya dilakukan jika data yang hilang ada di kolom kritikal (misal: employee_id atau job_role).
 
--- Jika ingin menghapus baris HANYA JIKA SEMUA kolom bernilai NULL (baris benar-benar kosong):
+-- Jika ingin menghapus baris HANYA JIKA SEMUA kolom bernilai NULL (baris benar-benar kosong) mirip AND:
 DELETE FROM employee_salary
 WHERE COALESCE(employee_id, job_role, age, years_experience, education_level, city_tier, performance_score, num_skills, remote_work, annual_salary_usd) IS NULL;
 
@@ -113,7 +113,7 @@ WHERE COALESCE(employee_id, job_role, age, years_experience, education_level, ci
 DELETE FROM employee_salary
 WHERE employee_id IS NULL OR job_role IS NULL OR age IS NULL OR years_experience IS NULL OR education_level IS NULL OR city_tier IS NULL OR performance_score IS NULL OR num_skills IS NULL OR annual_salary_usd IS NULL;
 
--- atau dengan trik CONCAT
+-- atau dengan trik CONCAT (mirip mekanisme or)
 DELETE FROM employee_salary
 WHERE CONCAT(employee_id, job_role, age, years_experience, education_level, city_tier, performance_score, num_skills, remote_work, annual_salary_usd) IS NULL;
 
