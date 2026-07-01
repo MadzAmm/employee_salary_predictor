@@ -76,119 +76,123 @@ data = data[data["performance_score"].between(perf[0], perf[1])]
 #     data = data[
 #         (data["years_experience"] >= exp[0]) & (data["years_experience"] <= exp[1])
 #     ]
+if data.empty:
+    st.warning("Warning: No matching data found. Please enter a filter combination!")
+else:
+    met1, met2, met3 = st.columns(3)
+    with met1:
+        value1 = data["employee_id"].count()
+        perc = round(data["employee_id"].count() / df["employee_id"].count() * 100)
+        cd1 = data.groupby("job_role").size()
+        if "prev_value" not in st.session_state:
+            st.session_state.prev_value = 0
+        new_value = data["employee_id"].count()
+        delta = new_value - st.session_state.prev_value
+        st.session_state.prev_value = new_value
 
-met1, met2, met3 = st.columns(3)
-with met1:
-    value1 = data["employee_id"].count()
-    perc = round(data["employee_id"].count() / df["employee_id"].count() * 100)
-    cd1 = data.groupby("job_role").size()
-    if "prev_value" not in st.session_state:
-        st.session_state.prev_value = 0
-    new_value = data["employee_id"].count()
-    delta = new_value - st.session_state.prev_value
-    st.session_state.prev_value = new_value
+        st.metric(
+            "Number of Employees",
+            f"{value1} Employees",
+            delta=delta,
+            border=True,
+            chart_data=cd1,
+            chart_type="bar",
+            delta_description=f"{perc}% of total employees",
+        )
 
-    st.metric(
-        "Number of Employees",
-        f"{value1} Employees",
-        delta=delta,
-        border=True,
-        chart_data=cd1,
-        chart_type="bar",
-        delta_description=f"{perc}% of total employees",
-    )
+    with met2:
+        value2 = data["annual_salary_usd"].mean()
+        perc = round(
+            data["annual_salary_usd"].mean() / df["annual_salary_usd"].mean() * 100
+        )
+        cd2 = round(data.groupby("job_role")["annual_salary_usd"].mean())
+        if "prev_value2" not in st.session_state:
+            st.session_state.prev_value2 = 0
+        new_value2 = round(data["annual_salary_usd"].mean())
+        delta2 = new_value2 - st.session_state.prev_value2
+        st.session_state.prev_value2 = new_value2
+        st.metric(
+            "Average Salary",
+            f"${value2:,.2f}",
+            chart_data=cd2,
+            chart_type="line",
+            delta=delta2,
+            delta_description=f"{perc}% of average salary",
+            border=True,
+        )
 
-with met2:
-    value2 = data["annual_salary_usd"].mean()
-    perc = round(
-        data["annual_salary_usd"].mean() / df["annual_salary_usd"].mean() * 100
-    )
-    cd2 = round(data.groupby("job_role")["annual_salary_usd"].mean())
-    if "prev_value2" not in st.session_state:
-        st.session_state.prev_value2 = 0
-    new_value2 = round(data["annual_salary_usd"].mean())
-    delta2 = new_value2 - st.session_state.prev_value2
-    st.session_state.prev_value2 = new_value2
-    st.metric(
-        "Average Salary",
-        f"${value2:,.2f}",
-        chart_data=cd2,
-        chart_type="line",
-        delta=delta2,
-        delta_description=f"{perc}% of average salary",
-        border=True,
-    )
+    with met3:
+        value3 = data["years_experience"].mean()
+        perc = round(
+            data["years_experience"].mean() / df["years_experience"].mean() * 100
+        )
+        cd3 = round(data.groupby("job_role")["years_experience"].mean())
+        if "prev_value3" not in st.session_state:
+            st.session_state.prev_value3 = 0
+        new_value3 = round(data["years_experience"].mean())
+        delta3 = new_value3 - st.session_state.prev_value3
+        st.session_state.prev_value3 = new_value3
+        st.metric(
+            "Average Experience",
+            f"{value3:.1f} Years",
+            delta=delta3,
+            delta_description=f"{perc}% of average experience",
+            chart_data=cd3,
+            chart_type="area",
+            border=True,
+        )
 
-with met3:
-    value3 = data["years_experience"].mean()
-    perc = round(data["years_experience"].mean() / df["years_experience"].mean() * 100)
-    cd3 = round(data.groupby("job_role")["years_experience"].mean())
-    if "prev_value3" not in st.session_state:
-        st.session_state.prev_value3 = 0
-    new_value3 = round(data["years_experience"].mean())
-    delta3 = new_value3 - st.session_state.prev_value3
-    st.session_state.prev_value3 = new_value3
-    st.metric(
-        "Average Experience",
-        f"{value3:.1f} Years",
-        delta=delta3,
-        delta_description=f"{perc}% of average experience",
-        chart_data=cd3,
-        chart_type="area",
-        border=True,
-    )
+    st.divider()
 
-st.divider()
+    st.dataframe(data)
 
-st.dataframe(data)
+    st.subheader("Charts")
 
-st.subheader("Charts")
+    chart1, chart2 = st.columns(2)
 
-chart1, chart2 = st.columns(2)
+    with chart1:
+        st.write("Salary by Job Role")
+        st.markdown("> Colors: Education Level")
+        salary_job = df.pivot_table(
+            index="job_role",
+            columns="education_level",
+            values="annual_salary_usd",
+            aggfunc="mean",
+        )
 
-with chart1:
-    st.write("Salary by Job Role")
-    st.markdown("> Colors: Education Level")
-    salary_job = df.pivot_table(
-        index="job_role",
+        st.bar_chart(salary_job)
+    with chart2:
+        st.write("Education Level Distribution")
+        st.markdown("> Colors: Job Role")
+        edu_dist = df.pivot_table(
+            index="education_level",
+            columns="job_role",
+            aggfunc="size",
+        )
+        st.bar_chart(edu_dist)
+
+    st.divider()
+
+    chart3, chart4 = st.columns(2)
+    with chart3:
+        st.write("Exp and Age Correlation")
+        st.markdown("> Colors: Education Level")
+        st.scatter_chart(data, x="years_experience", y="age", color="education_level")
+    with chart4:
+        st.write("Exp and Performance Correlation")
+        st.markdown("> Colors: Education Level")
+        st.scatter_chart(
+            data, x="years_experience", y="performance_score", color="education_level"
+        )
+
+    st.divider()
+
+    sal_exp = data.pivot_table(
+        index="years_experience",
         columns="education_level",
         values="annual_salary_usd",
         aggfunc="mean",
     )
-
-    st.bar_chart(salary_job)
-with chart2:
-    st.write("Education Level Distribution")
-    st.markdown("> Colors: Job Role")
-    edu_dist = df.pivot_table(
-        index="education_level",
-        columns="job_role",
-        aggfunc="size",
-    )
-    st.bar_chart(edu_dist)
-
-st.divider()
-
-chart3, chart4 = st.columns(2)
-with chart3:
-    st.write("Exp and Age Correlation")
+    st.write("Salary By Experience")
     st.markdown("> Colors: Education Level")
-    st.scatter_chart(data, x="years_experience", y="age", color="education_level")
-with chart4:
-    st.write("Exp and Performance Correlation")
-    st.markdown("> Colors: Education Level")
-    st.scatter_chart(
-        data, x="years_experience", y="performance_score", color="education_level"
-    )
-
-st.divider()
-
-sal_exp = data.pivot_table(
-    index="years_experience",
-    columns="education_level",
-    values="annual_salary_usd",
-    aggfunc="mean",
-)
-st.write("Salary By Experience")
-st.markdown("> Colors: Education Level")
-st.line_chart(sal_exp, x_label="Experience", y_label="Avg Salary")
+    st.line_chart(sal_exp, x_label="Experience", y_label="Avg Salary")
