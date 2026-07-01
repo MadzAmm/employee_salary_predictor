@@ -1,5 +1,9 @@
 import pandas as pd
 import streamlit as st
+import os
+
+current_dir = os.path.dirname(__file__)
+df_path = os.path.join(current_dir, "employee_salary_regression.csv")
 
 st.set_page_config(page_title="Dashboard", layout="wide")
 st.title("Interactive Dashboard")
@@ -7,7 +11,7 @@ st.title("Interactive Dashboard")
 
 @st.cache_data
 def load_data():
-    df = pd.read_csv("employee_salary_regression.csv")
+    df = pd.read_csv(df_path)
     return df
 
 
